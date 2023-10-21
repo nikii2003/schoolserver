@@ -66,6 +66,59 @@ app.post("/student", async (req, res) => {
   });
 });
 
+app.delete('/student:_id',async (req,res)=>{
+  const {_id}=req.params;
+  await student.deleteOne({_id:_id});
+  res.json({
+  success:true,
+  message:`student deleted successfuly with id ${_id}`
+  })
+})
+app.put('/student/:_id', async (req,res)=>{
+  const {_id}=req.params;
+  const {name,age,mobile,email}=req.body;
+  await student.updateOne({_id : _id},{$set:{
+    name:name,
+    age:age,
+    mobile:mobile,
+    email:email
+  }})
+  const updateStudent = await student.findOne({_id:_id})
+
+  res.json({
+    success:true,
+    data:updateStudent,
+    message:"update succesfully"
+  })
+})
+
+app.patch('/student/:_id',async(req,res)=>{
+  const {_id}=req.params;
+  const {name,age,mobile,email}=req.body;
+ const mystudent=await student.findOne({_id: _id})
+
+if(name){
+  mystudent.name = name;
+}
+if(age){
+  mystudent.age = age;
+}
+if(mobile){
+  mystudent.mobile =mobile;
+}
+if(email){
+  mystudent.email =email;
+}
+
+const saveUpdate = await mystudent.save();
+
+res.json({
+  success:true,
+  data:saveUpdate,
+  message:"update specific change"
+})
+})
+
 app.get("/student", async (req, res) => {
   const { email } = req.query;
   const Student = await student.findOne({ email: email });
